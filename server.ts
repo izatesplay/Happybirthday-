@@ -131,7 +131,13 @@ async function startServer() {
 
   // --- API Routes ---
 
-  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '1385';
+  // Get admin password from db, or fallback/seed to '1385'
+  let dbData = readDb();
+  if (!dbData.adminPassword) {
+    dbData.adminPassword = '1385';
+    writeDb(dbData);
+  }
+  const ADMIN_PASSWORD = dbData.adminPassword || process.env.ADMIN_PASSWORD || '1385';
 
   const checkAdminAuth = (req: any, res: any, next: any) => {
     const authHeader = req.headers['authorization'];

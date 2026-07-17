@@ -36,9 +36,6 @@ define('DB_USER', 'root');              // نام کاربری دیتابیس د
 define('DB_PASS', '');                  // کلمه عبور دیتابیس در سی‌پنل
 define('DB_NAME', 'mahshid_birthday');  // نام دیتابیس ساخته شده در سی‌پنل
 
-// رمز عبور مدیریت پیش‌فرض برای بارگذاری عکس و آهنگ (مطابق با سرور اصلی)
-define('ADMIN_PASSWORD', '1385');
-
 // ۳. برقراری ارتباط با سرور دیتابیس
 $conn = @new mysqli(DB_HOST, DB_USER, DB_PASS);
 
@@ -115,6 +112,25 @@ if (!is_dir($songs_dir)) @mkdir($songs_dir, 0755, true);
 if (!is_dir($photos_dir)) @mkdir($photos_dir, 0755, true);
 
 // ۵. پیش‌کاشت (Seeding) داده‌های اولیه برای شروع کار دیتابیس تازه متولد شده
+// کاشت رمز عبور مدیریت پیش‌فرض
+$res = $conn->query("SELECT COUNT(*) as count FROM `settings` WHERE `setting_key` = 'adminPassword'");
+$row = $res->fetch_assoc();
+if ($row['count'] == 0) {
+    $stmt = $conn->prepare("INSERT INTO `settings` (`setting_key`, `setting_value`) VALUES ('adminPassword', ?)");
+    $default_pw = "1385";
+    $stmt->bind_param("s", $default_pw);
+    $stmt->execute();
+    $stmt->close();
+}
+
+// خواندن رمز عبور مدیریت از دیتابیس
+$admin_password_from_db = '1385';
+$res_pw = $conn->query("SELECT `setting_value` FROM `settings` WHERE `setting_key` = 'adminPassword'");
+if ($res_pw && $row_pw = $res_pw->fetch_assoc()) {
+    $admin_password_from_db = trim($row_pw['setting_value']);
+}
+define('ADMIN_PASSWORD', $admin_password_from_db);
+
 // کاشت تصویر فعال
 $res = $conn->query("SELECT COUNT(*) as count FROM `settings` WHERE `setting_key` = 'activePhoto'");
 $row = $res->fetch_assoc();
