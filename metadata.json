@@ -1,0 +1,6 @@
+{
+  "name": "Mahshid Birthday Celebration",
+  "description": "یک سایت زیبا، تعاملی و پرانرژی برای تبریک تولد مهشید با تم جذاب سبز و آبی، کیک تولد دیجیتال تعاملی، پخش موسیقی دلخواه و بازی حباب‌ها و هدیه‌های شگفت‌انگیز",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
