@@ -23,6 +23,16 @@ interface AdminPanelProps {
 
 type TabType = 'media' | 'wishes' | 'control';
 
+const toEnglishDigits = (str: string): string => {
+  const persianDigits = [/۰/g, /۱/g, /۲/g, /۳/g, /۴/g, /۵/g, /۶/g, /۷/g, /۸/g, /۹/g];
+  const arabicDigits = [/٠/g, /١/g, /٢/g, /٣/g, /٤/g, /٥/g, /٦/g, /٧/g, /٨/g, /٩/g];
+  let result = str;
+  for (let i = 0; i < 10; i++) {
+    result = result.replace(persianDigits[i], String(i)).replace(arabicDigits[i], String(i));
+  }
+  return result;
+};
+
 export default function AdminPanel({
   isOpen,
   onClose,
@@ -57,7 +67,7 @@ export default function AdminPanel({
     if (isOpen) {
       const storedPasscode = localStorage.getItem('admin_passcode');
       if (storedPasscode) {
-        verifyPasscode(storedPasscode, true);
+        verifyPasscode(toEnglishDigits(storedPasscode), true);
       } else {
         setIsAuthenticated(false);
       }
@@ -65,6 +75,7 @@ export default function AdminPanel({
   }, [isOpen]);
 
   const verifyPasscode = async (code: string, silent = false) => {
+    const normalizedCode = toEnglishDigits(code.trim());
     if (!silent) {
       setIsVerifying(true);
       setError('');
@@ -73,13 +84,13 @@ export default function AdminPanel({
       const response = await fetch('/api/admin/verify', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${code}`,
+          'Authorization': `Bearer ${normalizedCode}`,
           'Content-Type': 'application/json'
         }
       });
 
       if (response.ok) {
-        localStorage.setItem('admin_passcode', code);
+        localStorage.setItem('admin_passcode', normalizedCode);
         setIsAuthenticated(true);
       } else {
         if (!silent) {
@@ -102,11 +113,12 @@ export default function AdminPanel({
 
   const handleLoginSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!passcode.trim()) {
+    const cleanPasscode = toEnglishDigits(passcode.trim());
+    if (!cleanPasscode) {
       setError('لطفا گذرواژه را وارد کنید.');
       return;
     }
-    verifyPasscode(passcode);
+    verifyPasscode(cleanPasscode);
   };
 
   const handleLogout = () => {
