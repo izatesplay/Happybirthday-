@@ -45,23 +45,23 @@ function ensureDirs() {
       wishes: [
         {
           id: 'w-1',
-          sender: 'سارا',
-          text: 'مهشید قشنگم تولدت کلی مبارک باشه! امیدوارم امسال به تک تک آرزوهای قشنگت برسی و همیشه بخندی 😍💚',
-          color: 'teal',
+          sender: 'یک همراه قدیمی',
+          text: 'مهشید مهران و باوقار، میلادت فرخنده باد. مرسی که با آمدنت دنیا رو زیباتر و پر از حس زنده بودن کردی 😍💖',
+          color: 'rose',
           timestamp: Date.now() - 3600000 * 2
         },
         {
           id: 'w-2',
-          sender: 'امیر',
-          text: 'تولدت مبارک ستاره‌ی درخشان! سایه‌ات مستدام و دلت همیشه شاد و لبت خندون باشه برات بهترین‌ها رو می‌خوام 💙✨',
-          color: 'blue',
+          sender: 'رازِ شب‌های روشن',
+          text: 'تولدت مبارک تماشایی‌ترین ستاره‌ی امشب! آرزو می‌کنم چشمانت همیشه از شادی برق بزند و قلبت پناهگاهِ زیباترین احساس‌ها باشد 💕✨',
+          color: 'pink',
           timestamp: Date.now() - 3600000
         },
         {
           id: 'w-3',
-          sender: 'مینا',
-          text: 'سبزترین و آرامش‌بخش‌ترین تولد تقدیم به مهشید مهربان. مرسی که همیشه با انرژی مثبتت دنیا رو قشنگ‌تر می‌کنی 🍃🌸',
-          color: 'green',
+          sender: 'نسیم بهاری',
+          text: 'لطیف‌ترین و رویایی‌ترین تولد تقدیم به مهشید دوست‌داشتنی. جهان به وجود انسان‌های نابی چون تو افتخار می‌کنه 🌸✨',
+          color: 'fuchsia',
           timestamp: Date.now() - 1800000
         }
       ]
@@ -128,6 +128,41 @@ async function startServer() {
 
   // --- API Routes ---
 
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '1385';
+
+  const checkAdminAuth = (req: any, res: any, next: any) => {
+    const authHeader = req.headers['authorization'];
+    let password = '';
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      password = authHeader.substring(7);
+    } else {
+      password = (req.headers['x-admin-password'] as string) || '';
+    }
+
+    if (password === ADMIN_PASSWORD) {
+      next();
+    } else {
+      res.status(401).json({ error: 'Incorrect passcode' });
+    }
+  };
+
+  // Verify admin passcode
+  app.post('/api/admin/verify', (req, res) => {
+    const authHeader = req.headers['authorization'];
+    let password = '';
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      password = authHeader.substring(7);
+    } else {
+      password = (req.headers['x-admin-password'] as string) || '';
+    }
+
+    if (password === ADMIN_PASSWORD) {
+      res.json({ success: true, message: 'Authenticated successfully' });
+    } else {
+      res.status(401).json({ error: 'Incorrect passcode' });
+    }
+  });
+
   // Get full app state
   app.get('/api/state', (req, res) => {
     const db = readDb();
@@ -141,7 +176,7 @@ async function startServer() {
   });
 
   // Upload custom song
-  app.post('/api/songs/upload', uploadSong.single('audio'), (req, res) => {
+  app.post('/api/songs/upload', checkAdminAuth, uploadSong.single('audio'), (req, res) => {
     if (!req.file) {
       return res.status(400).json({ error: 'No audio file uploaded' });
     }
@@ -165,7 +200,7 @@ async function startServer() {
   });
 
   // Upload custom photo
-  app.post('/api/photo/upload', uploadPhoto.single('photo'), (req, res) => {
+  app.post('/api/photo/upload', checkAdminAuth, uploadPhoto.single('photo'), (req, res) => {
     if (!req.file) {
       return res.status(400).json({ error: 'No image file uploaded' });
     }
@@ -180,7 +215,7 @@ async function startServer() {
   });
 
   // Reset photo to default
-  app.post('/api/photo/reset', (req, res) => {
+  app.post('/api/photo/reset', checkAdminAuth, (req, res) => {
     const db = readDb();
     db.activePhoto = '/src/assets/images/mahshid_avatar_1784284797850.jpg';
     writeDb(db);
@@ -204,7 +239,7 @@ async function startServer() {
       id: `wish-${Date.now()}`,
       sender,
       text,
-      color: color || 'green',
+      color: color || 'rose',
       timestamp: Date.now()
     };
 

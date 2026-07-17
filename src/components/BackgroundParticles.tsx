@@ -46,27 +46,27 @@ export default function BackgroundParticles() {
 
     const particles: Particle[] = [];
     const colors = [
-      'rgba(16, 185, 129, 0.4)', // Emerald
+      'rgba(16, 185, 129, 0.4)', // Emerald Green
       'rgba(52, 211, 153, 0.4)', // Mint Green
-      'rgba(14, 165, 233, 0.4)', // Sky Blue
-      'rgba(56, 189, 248, 0.4)', // Light Turquoise
-      'rgba(6, 182, 212, 0.3)'   // Cyan
+      'rgba(56, 189, 248, 0.4)', // Sky Blue
+      'rgba(34, 211, 238, 0.4)', // Turquoise Cyan
+      'rgba(14, 165, 233, 0.3)'  // Ocean Blue
     ];
 
     // Initialize particles
-    const particleCount = Math.min(60, Math.floor((width * height) / 25000));
+    const particleCount = Math.min(70, Math.floor((width * height) / 20000));
     for (let i = 0; i < particleCount; i++) {
       particles.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        size: Math.random() * 6 + 1.5,
+        size: Math.random() * 5 + 1.5,
         speedX: (Math.random() - 0.5) * 0.4,
-        speedY: -Math.random() * 0.6 - 0.1, // Always float upwards
+        speedY: -Math.random() * 0.5 - 0.1, // Always float upwards
         color: colors[Math.floor(Math.random() * colors.length)]!,
-        alpha: Math.random() * 0.5 + 0.2,
-        pulseSpeed: Math.random() * 0.02 + 0.005,
+        alpha: Math.random() * 0.6 + 0.2,
+        pulseSpeed: Math.random() * 0.015 + 0.005,
         pulseDir: Math.random() > 0.5 ? 1 : -1,
-        parallaxFactor: Math.random() * 0.05 + 0.01 // Parallax depth
+        parallaxFactor: Math.random() * 0.04 + 0.01 // Parallax depth
       });
     }
 
@@ -78,7 +78,7 @@ export default function BackgroundParticles() {
       mouse.x += (mouse.targetX - mouse.x) * 0.08;
       mouse.y += (mouse.targetY - mouse.y) * 0.08;
 
-      // Draw subtle ambient vignette glow
+      // Draw subtle ambient vignette glow (Emerald and Cyan)
       const radialGlow = ctx.createRadialGradient(
         mouse.x,
         mouse.y,
@@ -87,9 +87,9 @@ export default function BackgroundParticles() {
         height / 2,
         Math.max(width, height)
       );
-      radialGlow.addColorStop(0, 'rgba(6, 78, 59, 0.15)'); // deep teal
-      radialGlow.addColorStop(0.5, 'rgba(2, 44, 34, 0.05)'); // deep forest
-      radialGlow.addColorStop(1, 'rgba(3, 7, 18, 0)'); // dark grey
+      radialGlow.addColorStop(0, 'rgba(2, 44, 34, 0.25)'); // deep forest emerald
+      radialGlow.addColorStop(0.5, 'rgba(2, 26, 30, 0.08)'); // deep dark teal
+      radialGlow.addColorStop(1, 'rgba(3, 7, 18, 0)'); // black
       ctx.fillStyle = radialGlow;
       ctx.fillRect(0, 0, width, height);
 
@@ -101,21 +101,36 @@ export default function BackgroundParticles() {
 
         ctx.save();
         ctx.beginPath();
-        ctx.arc(p.x + offsetX, p.y + offsetY, p.size, 0, Math.PI * 2);
         
         // Pulse transparency
         p.alpha += p.pulseSpeed * p.pulseDir;
-        if (p.alpha > 0.8) {
-          p.alpha = 0.8;
+        if (p.alpha > 0.85) {
+          p.alpha = 0.85;
           p.pulseDir = -1;
-        } else if (p.alpha < 0.1) {
-          p.alpha = 0.1;
+        } else if (p.alpha < 0.15) {
+          p.alpha = 0.15;
           p.pulseDir = 1;
         }
 
         ctx.fillStyle = p.color.replace('0.4', p.alpha.toFixed(2)).replace('0.3', p.alpha.toFixed(2));
-        ctx.shadowBlur = p.size * 2;
+        ctx.shadowBlur = p.size * 2.5;
         ctx.shadowColor = ctx.fillStyle as string;
+
+        // Draw some particles as floating heart shapes or circular lights
+        const isSpecial = p.size > 4.2;
+        if (isSpecial) {
+          // Draw a lovely floating heart shape
+          const cx = p.x + offsetX;
+          const cy = p.y + offsetY;
+          const size = p.size * 1.6;
+          
+          ctx.moveTo(cx, cy + size * 0.3);
+          ctx.bezierCurveTo(cx - size / 2, cy - size / 2, cx - size, cy + size / 3, cx, cy + size);
+          ctx.bezierCurveTo(cx + size, cy + size / 3, cx + size / 2, cy - size / 2, cx, cy + size * 0.3);
+        } else {
+          ctx.arc(p.x + offsetX, p.y + offsetY, p.size, 0, Math.PI * 2);
+        }
+        
         ctx.fill();
         ctx.restore();
 

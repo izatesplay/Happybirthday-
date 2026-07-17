@@ -1,5 +1,6 @@
 import { useState, useRef, ChangeEvent, DragEvent } from 'react';
-import { Camera, Image as ImageIcon, Sparkles, RefreshCw, Loader2 } from 'lucide-react';
+import { Camera, Image as ImageIcon, Sparkles, RefreshCw, Loader2, Heart } from 'lucide-react';
+import AdminAuthModal from './AdminAuthModal';
 
 interface PhotoSectionProps {
   photoUrl: string;
@@ -10,17 +11,33 @@ export default function PhotoSection({ photoUrl, onPhotoChange }: PhotoSectionPr
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authActionType, setAuthActionType] = useState<'upload' | 'reset' | null>(null);
+  const pendingFileRef = useRef<File | null>(null);
 
-  const uploadFile = async (file: File) => {
+  const uploadFile = async (file: File, overridePasscode?: string) => {
     setIsUploading(true);
     const formData = new FormData();
     formData.append('photo', file);
 
+    const storedPasscode = overridePasscode || localStorage.getItem('admin_passcode') || '';
+
     try {
       const response = await fetch('/api/photo/upload', {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${storedPasscode}`
+        },
         body: formData,
       });
+
+      if (response.status === 401) {
+        localStorage.removeItem('admin_passcode');
+        pendingFileRef.current = file;
+        setAuthActionType('upload');
+        setIsAuthModalOpen(true);
+        return;
+      }
 
       if (!response.ok) {
         throw new Error('Failed to upload photo');
@@ -75,12 +92,25 @@ export default function PhotoSection({ photoUrl, onPhotoChange }: PhotoSectionPr
     }
   };
 
-  const resetPhoto = async () => {
+  const resetPhoto = async (overridePasscode?: string) => {
     setIsUploading(true);
+    const storedPasscode = overridePasscode || localStorage.getItem('admin_passcode') || '';
+
     try {
       const response = await fetch('/api/photo/reset', {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${storedPasscode}`
+        }
       });
+
+      if (response.status === 401) {
+        localStorage.removeItem('admin_passcode');
+        setAuthActionType('reset');
+        setIsAuthModalOpen(true);
+        return;
+      }
+
       if (response.ok) {
         const data = await response.json();
         onPhotoChange(data.activePhoto);
@@ -90,6 +120,16 @@ export default function PhotoSection({ photoUrl, onPhotoChange }: PhotoSectionPr
     } finally {
       setIsUploading(false);
     }
+  };
+
+  const handleAuthSuccess = (passcode: string) => {
+    if (authActionType === 'upload' && pendingFileRef.current) {
+      uploadFile(pendingFileRef.current, passcode);
+      pendingFileRef.current = null;
+    } else if (authActionType === 'reset') {
+      resetPhoto(passcode);
+    }
+    setAuthActionType(null);
   };
 
   return (
@@ -102,9 +142,9 @@ export default function PhotoSection({ photoUrl, onPhotoChange }: PhotoSectionPr
 
         {/* Real photo frame with glass backing */}
         <div className="relative w-56 h-56 sm:w-64 sm:h-64 rounded-full bg-slate-950 p-2 overflow-hidden shadow-[0_0_30px_rgba(16,185,129,0.3)]">
-          {/* Sparkles floating inside frame */}
-          <Sparkles className="absolute top-4 right-10 text-emerald-400 w-5 h-5 animate-pulse" />
-          <Sparkles className="absolute bottom-6 left-8 text-sky-400 w-4 h-4 animate-pulse" style={{ animationDelay: '0.8s' }} />
+          {/* Hearts floating inside frame */}
+          <Heart className="absolute top-4 right-10 text-emerald-400 fill-emerald-400/20 w-5 h-5 animate-pulse" />
+          <Heart className="absolute bottom-6 left-8 text-sky-400 fill-sky-400/20 w-4 h-4 animate-pulse" style={{ animationDelay: '0.8s' }} />
 
           {isUploading ? (
             <div className="w-full h-full rounded-full bg-slate-900/80 flex flex-col items-center justify-center text-emerald-300">
@@ -167,13 +207,24 @@ export default function PhotoSection({ photoUrl, onPhotoChange }: PhotoSectionPr
           <button
             onClick={resetPhoto}
             disabled={isUploading}
-            className="p-2 rounded-xl bg-slate-800/40 hover:bg-slate-800/80 border border-slate-700/50 text-slate-400 hover:text-rose-400 transition-all cursor-pointer disabled:opacity-50"
+            className="p-2 rounded-xl bg-slate-800/40 hover:bg-slate-800/80 border border-slate-700/50 text-slate-400 hover:text-emerald-400 transition-all cursor-pointer disabled:opacity-50"
             title="بازگشت به تصویر اولیه"
           >
             <RefreshCw className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: '4s' }} />
           </button>
         )}
       </div>
+
+      {/* Admin Passcode Modal for photo operations */}
+      <AdminAuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => {
+          setIsAuthModalOpen(false);
+          setAuthActionType(null);
+          pendingFileRef.current = null;
+        }}
+        onSuccess={handleAuthSuccess}
+      />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, ChangeEvent, MutableRefObject } fro
 import { Play, Pause, SkipForward, Volume2, VolumeX, Music, Upload, Music4, Compass, Loader2 } from 'lucide-react';
 import { Song } from '../types';
 import { DEFAULT_SONGS } from '../data';
+import AdminAuthModal from './AdminAuthModal';
 
 interface MusicPlayerProps {
   isPlaying: boolean;
@@ -102,9 +103,9 @@ export default function MusicPlayer({
 
       const waveCount = 3;
       const waveColors = [
-        'rgba(16, 185, 129, 0.4)', // Emerald
-        'rgba(14, 165, 233, 0.4)', // Sky blue
-        'rgba(56, 189, 248, 0.2)'  // Turquoise
+        'rgba(16, 185, 129, 0.4)',  // Emerald Green
+        'rgba(14, 165, 233, 0.4)',  // Sky Blue
+        'rgba(20, 184, 166, 0.2)'   // Teal
       ];
 
       // Draw horizontal baseline
@@ -200,24 +201,33 @@ export default function MusicPlayer({
     audio.volume = nextMuted ? 0 : volume;
   };
 
-  // Upload and handle custom MP3 file to backend database/filesystem
-  const handleCustomAudioUpload = async (e: ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-    const file = files[0];
-    if (!file) return;
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const pendingFileRef = useRef<File | null>(null);
 
+  const uploadSongFile = async (file: File, overridePasscode?: string) => {
     setIsUploading(true);
     const formData = new FormData();
     formData.append('audio', file);
     formData.append('title', file.name.replace(/\.[^/.]+$/, ""));
     formData.append('artist', 'موزیک بارگذاری شده 🎧');
 
+    const storedPasscode = overridePasscode || localStorage.getItem('admin_passcode') || '';
+
     try {
       const response = await fetch('/api/songs/upload', {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${storedPasscode}`
+        },
         body: formData,
       });
+
+      if (response.status === 401) {
+        localStorage.removeItem('admin_passcode');
+        pendingFileRef.current = file;
+        setIsAuthModalOpen(true);
+        return;
+      }
 
       if (!response.ok) {
         throw new Error('Failed to upload song');
@@ -234,6 +244,23 @@ export default function MusicPlayer({
       alert('خطا در بارگذاری آهنگ. لطفا دوباره تلاش کنید.');
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  // Upload and handle custom MP3 file to backend database/filesystem
+  const handleCustomAudioUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const file = files[0];
+    if (file) {
+      uploadSongFile(file);
+    }
+  };
+
+  const handleAuthSuccess = (passcode: string) => {
+    if (pendingFileRef.current) {
+      uploadSongFile(pendingFileRef.current, passcode);
+      pendingFileRef.current = null;
     }
   };
 
@@ -404,6 +431,16 @@ export default function MusicPlayer({
           ))}
         </div>
       )}
+
+      {/* Admin Passcode Modal for music operations */}
+      <AdminAuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => {
+          setIsAuthModalOpen(false);
+          pendingFileRef.current = null;
+        }}
+        onSuccess={handleAuthSuccess}
+      />
     </div>
   );
 }

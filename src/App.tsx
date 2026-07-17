@@ -185,9 +185,9 @@ export default function App() {
             exit={{ opacity: 0, y: -20, scale: 0.9 }}
             className="fixed top-6 left-1/2 -translate-x-1/2 z-40 px-6 py-3 rounded-full bg-emerald-950/90 border border-emerald-400 text-center shadow-[0_0_30px_rgba(16,185,129,0.5)] flex items-center gap-3"
           >
-            <Sparkles className="w-5 h-5 text-amber-300 animate-spin" />
-            <span className="font-display text-lg text-white">تولدت مبارک مهشید عزیزم! 🎉🎂🥳</span>
-            <Sparkles className="w-5 h-5 text-amber-300 animate-spin" />
+            <Heart className="w-5 h-5 text-emerald-400 animate-pulse fill-emerald-400/20" />
+            <span className="font-display text-lg text-white">میلادِ خجسته و رویایی‌ات مبارک مهشیدِ عزیز ✨💚🍰</span>
+            <Heart className="w-5 h-5 text-emerald-400 animate-pulse fill-emerald-400/20" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -201,25 +201,25 @@ export default function App() {
             
             {/* Little floating side heart/star decor */}
             <div className="absolute left-10 top-0 animate-float hidden md:block">
-              <Heart className="w-8 h-8 text-rose-500 fill-rose-500/20 blur-[0.5px]" />
+              <Heart className="w-8 h-8 text-emerald-400 fill-emerald-400/20 blur-[0.5px] animate-pulse-slow" />
             </div>
             <div className="absolute right-10 bottom-0 animate-float hidden md:block" style={{ animationDelay: '2.5s' }}>
-              <Star className="w-8 h-8 text-sky-400 fill-sky-400/20 blur-[0.5px] animate-spin" style={{ animationDuration: '12s' }} />
+              <Heart className="w-8 h-8 text-sky-400 fill-sky-400/20 blur-[0.5px] animate-pulse-slow" />
             </div>
 
             {/* Subtitle Card */}
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-300 font-sans mb-4 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
               <Calendar className="w-3.5 h-3.5" />
-              <span>جشنواره‌ی تولد رویایی • ۲۶ تیرماه 🍃💙</span>
+              <span>جشنواره‌ی تولد رویاییِ مهشیدِ گرانقدر • ۲۶ تیرماه 🍃🌸</span>
             </div>
 
             {/* Glowing grand title */}
             <h1 className="font-display text-5xl sm:text-7xl text-white tracking-wide leading-tight mb-2 select-none filter drop-shadow-[0_0_15px_rgba(16,185,129,0.2)]">
-              مهشید جان <span className="text-gradient animate-pulse-slow">تولدت مبارک!</span> 🎉
+              مهشیدِ عزیز <span className="text-gradient animate-pulse-slow">میلادت خجسته باد!</span> 💚
             </h1>
             
             <p className="font-sans text-sm sm:text-base text-slate-400 max-w-lg leading-loose mt-2">
-              امروز آسمان آبی‌تر و بهار سبزتر از همیشه است. یک تالار باشکوه، کیک رویایی و جعبه‌های هدیه‌ی اسرارآمیز منتظر لمس دستان مهربان توست!
+              امروز تلاقیِ بی‌نظیرِ بهارِ خرم و درخششِ بی‌کرانِ فیروزه‌ای افق است. تالاری رویایی، کیکی معطر به عطر گل‌های یاس و جعبه‌های اسرارآمیزی منتظر لمس دستان مهربان و پر از وقار شماست.
             </p>
           </div>
 
@@ -234,8 +234,10 @@ export default function App() {
                 <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
                 <div className="absolute bottom-0 left-0 w-32 h-32 bg-sky-500/5 rounded-full blur-2xl pointer-events-none" />
                 
-                <h3 className="font-sans font-black text-emerald-100 text-lg mb-6 leading-tight select-none">
-                  ملکه امروز جشن، <span className="text-sky-300">مهشید</span> 👑✨
+                <h3 className="font-sans font-black text-emerald-100 text-lg mb-6 leading-tight select-none flex items-center gap-1.5">
+                  <Heart className="w-4 h-4 text-emerald-400 fill-emerald-400/20 animate-pulse" />
+                  <span>صاحبِ این قابِ تماشایی،</span>
+                  <span className="text-sky-300">مهشیدِ گرانقدر</span>👑
                 </h3>
                 
                 {/* Photo frame + upload trigger component */}
@@ -262,16 +264,17 @@ export default function App() {
             <div className="lg:col-span-7 flex flex-col gap-8">
               
               {/* Interactive Cake blowing section */}
-              <div className="glass-card rounded-3xl border-sky-500/10 p-8 flex flex-col items-center relative overflow-hidden shadow-lg">
-                <div className="absolute -top-12 -right-12 w-44 h-44 bg-sky-500/5 rounded-full blur-3xl pointer-events-none" />
+              <div className="glass-card rounded-3xl border-emerald-500/10 p-8 flex flex-col items-center relative overflow-hidden shadow-lg">
+                <div className="absolute -top-12 -right-12 w-44 h-44 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
                 
                 <div className="w-full text-right mb-6 select-none">
                   <h3 className="font-sans font-black text-emerald-100 text-lg leading-tight flex items-center justify-end gap-2">
-                    <span>کیک تولد جادویی مهشید</span>
+                    <Heart className="w-4 h-4 text-sky-400 fill-sky-400/20 animate-pulse" />
+                    <span>کیک رویایی فوت‌کردن آرزوها</span>
                     <span className="text-xl">🎂</span>
                   </h3>
                   <p className="font-sans text-xs text-slate-400 mt-1">
-                    شمع‌ها رو تک‌تک فوت کن یا کلید فوت کردن همگانی رو فشار بده تا سوپرایز بشی!
+                    شمع‌ها را تک‌تک فوت کنید یا کلید فوت همگانی را فشار دهید تا جادو آغاز شود!
                   </p>
                 </div>
 
@@ -291,8 +294,8 @@ export default function App() {
 
           {/* Humble Aesthetic Footer */}
           <div className="text-center text-slate-600 font-sans text-[11px] mt-8 flex flex-col items-center gap-1.5 select-none">
-            <span>تقدیم به مهشید عزیز با یک دنیا عشق و آرزوهای سبز و آبی 🍃💙</span>
-            <span>Created with Magic & Love • 2026</span>
+            <span>تقدیم با نهایت احترام و آرزوهای طلایی برای مهشیدِ عزیز و ارزشمند 🍃💙</span>
+            <span>Created with Charm & Elegance • 2026</span>
           </div>
 
         </main>

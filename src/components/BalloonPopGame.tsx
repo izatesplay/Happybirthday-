@@ -45,10 +45,10 @@ export default function BalloonPopGame() {
     const width = container ? container.clientWidth : 300;
     
     const balloonColors = [
-      'radial-gradient(circle at 30% 30%, #34d399, #059669)', // Mint/Green
-      'radial-gradient(circle at 30% 30%, #38bdf8, #0284c7)', // Sky/Blue
-      'radial-gradient(circle at 30% 30%, #22d3ee, #0891b2)', // Turquoise/Cyan
-      'radial-gradient(circle at 30% 30%, #10b981, #065f46)'  // Emerald
+      'radial-gradient(circle at 30% 30%, #34d399, #059669)', // Emerald/Green
+      'radial-gradient(circle at 30% 30%, #38bdf8, #0284c7)', // Sky Blue
+      'radial-gradient(circle at 30% 30%, #2dd4bf, #0d9488)', // Teal
+      'radial-gradient(circle at 30% 30%, #22d3ee, #0891b2)'  // Cyan/Turquoise
     ];
 
     const wishIndex = index !== undefined ? index : Math.floor(Math.random() * BALLOON_WISHES.length);
@@ -154,7 +154,7 @@ export default function BalloonPopGame() {
       {/* Floating Arena Game Frame */}
       <div
         ref={containerRef}
-        className="relative w-full h-[400px] bg-slate-950/80 rounded-2xl border border-sky-500/20 shadow-inner overflow-hidden cursor-crosshair flex items-center justify-center"
+        className="relative w-full h-[400px] bg-slate-950/80 rounded-2xl border border-emerald-500/20 shadow-inner overflow-hidden cursor-crosshair flex items-center justify-center"
       >
         <div className="absolute top-2 left-2 flex items-center gap-1 text-[10px] text-slate-500 font-sans z-10 select-none">
           <Info className="w-3 h-3" />
@@ -211,7 +211,7 @@ export default function BalloonPopGame() {
                 >
                   {/* Balloon reflection shine */}
                   <div className="absolute top-1.5 left-2.5 w-3 h-1.5 bg-white/40 rounded-full rotate-[-15deg]" />
-                  🎈
+                  💖
                 </div>
 
                 {/* Balloon string knot & line */}
@@ -239,7 +239,7 @@ export default function BalloonPopGame() {
                         opacity: 0
                       }}
                       transition={{ duration: 0.4 }}
-                      className="absolute w-2 h-2 rounded-full bg-sky-300"
+                      className="absolute w-2 h-2 rounded-full bg-emerald-300"
                     />
                   );
                 })}
@@ -251,7 +251,7 @@ export default function BalloonPopGame() {
         {/* Empty status / Start screen */}
         {balloons.length === 0 && (
           <div className="text-center p-6 text-slate-500 font-sans flex flex-col items-center gap-2 select-none">
-            <Sparkles className="w-8 h-8 text-sky-400 animate-pulse" />
+            <Sparkles className="w-8 h-8 text-emerald-400 animate-pulse" />
             <span className="text-sm">در حال ساختن بادکنک‌های جادویی...</span>
           </div>
         )}

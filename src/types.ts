@@ -2,7 +2,7 @@ export interface Wish {
   id: string;
   sender: string;
   text: string;
-  color: 'blue' | 'green' | 'teal' | 'turquoise';
+  color: 'blue' | 'green' | 'teal' | 'turquoise' | 'pink' | 'rose' | 'lavender' | 'fuchsia';
   timestamp: number;
 }
 

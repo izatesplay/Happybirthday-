@@ -1,5 +1,5 @@
 import React, { useState, useEffect, FormEvent } from 'react';
-import { Gift, BookOpen, PenTool, Sparkles, MessageSquare, Send, Check } from 'lucide-react';
+import { Gift, BookOpen, PenTool, Sparkles, MessageSquare, Send, Check, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MAWSHID_POEMS, PRESET_WISHES } from '../data';
 import { Wish } from '../types';
@@ -72,8 +72,10 @@ export default function GiftBoxesSection() {
 
   return (
     <div className="w-full flex flex-col items-center">
-      <h2 className="font-display text-3xl text-gradient mb-8 text-center leading-relaxed">
-        جعبه‌های هدیه شگفت‌انگیز را باز کنید! 🎁
+      <h2 className="font-display text-3xl text-gradient mb-8 text-center leading-relaxed flex items-center justify-center gap-2 select-none">
+        <Heart className="w-6 h-6 text-emerald-400 fill-emerald-400/20 animate-pulse" />
+        <span>جعبه‌های هدیه شگفت‌انگیز را باز کنید!</span>
+        <Heart className="w-6 h-6 text-sky-400 fill-sky-400/20 animate-pulse" />
       </h2>
 
       {/* THREE INTERACTIVE GIFT BOXES */}
@@ -166,10 +168,25 @@ export default function GiftBoxesSection() {
               <div className="px-6 py-4 border-b border-slate-800/80 bg-slate-950/40 flex justify-between items-center">
                 <div className="flex items-center gap-2">
                   <Gift className="w-5 h-5 text-emerald-400" />
-                  <h3 className="font-display text-xl text-white">
-                    {activeGift === 1 && '📜 آرزوهای طلایی و شعر'}
-                    {activeGift === 2 && '📝 تخته تبریک صمیمانه'}
-                    {activeGift === 3 && '🎈 بازی ترکاندن بادکنک‌ها'}
+                  <h3 className="font-display text-xl text-white flex items-center gap-1.5">
+                    {activeGift === 1 && (
+                      <>
+                        <span>📜 آرزوهای طلایی و شعر</span>
+                        <Heart className="w-4 h-4 text-emerald-400 fill-emerald-400/20 animate-pulse" />
+                      </>
+                    )}
+                    {activeGift === 2 && (
+                      <>
+                        <span>📝 تخته تبریک صمیمانه</span>
+                        <Heart className="w-4 h-4 text-sky-400 fill-sky-400/20 animate-pulse" />
+                      </>
+                    )}
+                    {activeGift === 3 && (
+                      <>
+                        <span>🎈 بازی ترکاندن بادکنک‌ها</span>
+                        <Heart className="w-4 h-4 text-emerald-400 fill-emerald-400/20 animate-pulse" />
+                      </>
+                    )}
                   </h3>
                 </div>
                 <button
@@ -190,8 +207,9 @@ export default function GiftBoxesSection() {
                         key={index}
                         className="p-5 rounded-2xl bg-slate-950/50 border border-emerald-500/10 hover:border-emerald-500/30 transition-all flex flex-col relative"
                       >
-                        <h4 className="font-sans font-black text-emerald-300 text-sm mb-3">
-                          {poem.title}
+                        <h4 className="font-sans font-black text-emerald-300 text-sm mb-3 flex items-center gap-1.5">
+                          <Heart className="w-4 h-4 text-emerald-400 fill-emerald-400/20 animate-pulse" />
+                          <span>{poem.title}</span>
                         </h4>
                         <p className="font-sans text-xs sm:text-sm text-slate-300 leading-loose text-justify whitespace-pre-line text-right">
                           {poem.text}
@@ -287,26 +305,27 @@ export default function GiftBoxesSection() {
                         دیوار آرزوها ({wishes.length} پیام)
                       </h4>
 
-                      {wishes.map((w) => (
-                        <div
-                          key={w.id}
-                          className={`p-4 rounded-xl bg-slate-950/60 border text-right transition-all flex flex-col gap-1.5 ${
-                            w.color === 'green' && 'border-emerald-500/30'
-                          } ${w.color === 'blue' && 'border-sky-500/30'} ${
-                            w.color === 'teal' && 'border-teal-500/30'
-                          } ${w.color === 'turquoise' && 'border-cyan-500/30'}`}
-                        >
-                          <div className="flex justify-between items-center">
-                            <span className="text-[10px] text-slate-500 font-mono">
-                              {new Date(w.timestamp).toLocaleTimeString('fa-IR', {
-                                hour: '2-digit',
-                                minute: '2-digit'
-                              })}
-                            </span>
-                            <span className="font-sans font-black text-xs text-emerald-300">
-                              {w.sender} تبریک می‌گه:
-                            </span>
-                          </div>
+                        {wishes.map((w) => (
+                          <div
+                            key={w.id}
+                            className={`p-4 rounded-xl bg-slate-950/60 border text-right transition-all flex flex-col gap-1.5 ${
+                              w.color === 'green' && 'border-emerald-500/30'
+                            } ${w.color === 'blue' && 'border-sky-500/30'} ${
+                              w.color === 'teal' && 'border-teal-500/30'
+                            } ${w.color === 'turquoise' && 'border-cyan-500/30'}`}
+                          >
+                            <div className="flex justify-between items-center">
+                              <span className="text-[10px] text-slate-500 font-mono">
+                                {new Date(w.timestamp).toLocaleTimeString('fa-IR', {
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </span>
+                              <span className="font-sans font-black text-xs text-emerald-300 flex items-center gap-1">
+                                <Heart className="w-3.5 h-3.5 text-emerald-400 fill-emerald-400/20" />
+                                <span>{w.sender} تبریک می‌گه:</span>
+                              </span>
+                            </div>
                           <p className="font-sans text-xs text-slate-300 leading-relaxed text-justify whitespace-pre-line">
                             {w.text}
                           </p>

@@ -117,7 +117,7 @@ export default function InteractiveCake({ onBlowAll }: InteractiveCakeProps) {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0, y: -15, filter: 'blur(4px)' }}
                     transition={{ type: 'spring', stiffness: 300 }}
-                    className="absolute -top-7 w-3 h-7 bg-gradient-to-t from-orange-400 via-amber-300 to-sky-100 rounded-full animate-pulse shadow-[0_0_15px_rgba(251,191,36,0.8)]"
+                    className="absolute -top-7 w-3 h-7 bg-gradient-to-t from-emerald-400 via-teal-300 to-sky-100 rounded-full animate-pulse shadow-[0_0_15px_rgba(52,211,153,0.8)]"
                     style={{
                       transformOrigin: 'bottom center',
                       animationDuration: `${0.8 + idx * 0.15}s`
@@ -137,12 +137,12 @@ export default function InteractiveCake({ onBlowAll }: InteractiveCakeProps) {
                 )}
               </AnimatePresence>
 
-              {/* Candle Body (Dual Color Mint and Teal) */}
+              {/* Candle Body (Dual Color Emerald and Sky Blue) */}
               <div
                 className={`w-3.5 h-12 rounded-t-sm shadow-md transition-all ${
                   idx % 2 === 0
-                    ? 'bg-gradient-to-b from-teal-400 to-emerald-600'
-                    : 'bg-gradient-to-b from-sky-400 to-blue-600'
+                    ? 'bg-gradient-to-b from-emerald-400 to-teal-600'
+                    : 'bg-gradient-to-b from-sky-300 to-blue-500'
                 } ${isLit ? 'group-hover:brightness-110' : 'brightness-50'}`}
               >
                 {/* Spiral Stripes decoration */}
@@ -152,14 +152,14 @@ export default function InteractiveCake({ onBlowAll }: InteractiveCakeProps) {
           ))}
         </div>
 
-        {/* TOP TIER (طبقه بالا) - Mint Green / Blue Accent */}
+        {/* TOP TIER (طبقه بالا) - Emerald Green / Teal */}
         <div className="relative w-36 h-16 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-t-xl z-2 flex flex-col justify-end shadow-md overflow-hidden border-t border-emerald-300/30">
           {/* Frosting Drips Top Tier */}
           <div className="absolute top-0 left-0 right-0 h-4 flex justify-between z-3">
             {[...Array(8)].map((_, i) => (
               <div
                 key={i}
-                className="w-5 h-5 rounded-full bg-gradient-to-b from-sky-300 to-sky-400/90 -mt-2"
+                className="w-5 h-5 rounded-full bg-gradient-to-b from-sky-200 to-sky-300/90 -mt-2"
                 style={{
                   transform: `scaleY(${1 + (i % 3) * 0.25})`
                 }}
@@ -168,24 +168,24 @@ export default function InteractiveCake({ onBlowAll }: InteractiveCakeProps) {
           </div>
 
           {/* Drips cover border */}
-          <div className="absolute top-0 left-0 right-0 h-1.5 bg-sky-300 z-3" />
+          <div className="absolute top-0 left-0 right-0 h-1.5 bg-sky-200 z-3" />
 
           {/* Side stars */}
           <div className="flex justify-around items-center h-full px-2">
-            <Sparkles className="w-3 h-3 text-sky-200 opacity-60 animate-bounce" />
+            <Sparkles className="w-3 h-3 text-emerald-100 opacity-60 animate-bounce" />
             <Sparkles className="w-3.5 h-3.5 text-white opacity-80 animate-pulse" />
-            <Sparkles className="w-3.5 h-3.5 text-sky-200 opacity-60 animate-bounce" style={{ animationDelay: '0.4s' }} />
+            <Sparkles className="w-3.5 h-3.5 text-emerald-100 opacity-60 animate-bounce" style={{ animationDelay: '0.4s' }} />
           </div>
         </div>
 
-        {/* BOTTOM TIER (طبقه پایین) - Dark Teal / Cyan Accent */}
-        <div className="relative w-52 h-20 bg-gradient-to-r from-teal-600 to-sky-700 rounded-t-xl z-1 shadow-lg overflow-hidden border-t border-teal-500/20">
+        {/* BOTTOM TIER (طبقه پایین) - Deep Forest Green / Night Teal */}
+        <div className="relative w-52 h-20 bg-gradient-to-r from-teal-800 to-slate-900 rounded-t-xl z-1 shadow-lg overflow-hidden border-t border-teal-700/20">
           {/* Bottom frosting drips */}
           <div className="absolute top-0 left-0 right-0 h-5 flex justify-between z-3">
             {[...Array(12)].map((_, i) => (
               <div
                 key={i}
-                className="w-5 h-6 rounded-full bg-gradient-to-b from-emerald-300 to-emerald-400 -mt-2.5"
+                className="w-5 h-6 rounded-full bg-gradient-to-b from-emerald-400 to-teal-500 -mt-2.5"
                 style={{
                   transform: `scaleY(${1 + (i % 4) * 0.25})`
                 }}
@@ -193,20 +193,20 @@ export default function InteractiveCake({ onBlowAll }: InteractiveCakeProps) {
             ))}
           </div>
 
-          <div className="absolute top-0 left-0 right-0 h-2 bg-emerald-300 z-3" />
+          <div className="absolute top-0 left-0 right-0 h-2 bg-emerald-400 z-3" />
 
-          {/* Swirly icing patterns */}
-          <div className="absolute bottom-2 inset-x-0 h-4 flex justify-around items-center text-xs font-sans text-sky-200/40 tracking-wider">
-            <span>✿</span>
-            <span>✿</span>
-            <span>✿</span>
-            <span>✿</span>
-            <span>✿</span>
+          {/* Swirly icing patterns (Hearts instead of flowers) */}
+          <div className="absolute bottom-2 inset-x-0 h-4 flex justify-around items-center text-xs font-sans text-emerald-200/40 tracking-wider">
+            <span>❤</span>
+            <span>❤</span>
+            <span>❤</span>
+            <span>❤</span>
+            <span>❤</span>
           </div>
         </div>
 
         {/* BASE STAND (پایه کیک) */}
-        <div className="w-60 h-4 bg-gradient-to-r from-emerald-200 to-sky-200 rounded-full z-0 shadow-xl border border-white/20" />
+        <div className="w-60 h-4 bg-gradient-to-r from-emerald-200 via-sky-100 to-emerald-200 rounded-full z-0 shadow-xl border border-white/20" />
         <div className="w-28 h-6 bg-gradient-to-b from-slate-300/40 to-slate-500/10 backdrop-blur-md rounded-b-xl z-0 shadow-md border-x border-b border-slate-400/20" />
       </div>
 
@@ -216,7 +216,7 @@ export default function InteractiveCake({ onBlowAll }: InteractiveCakeProps) {
           <button
             onClick={handleBlowAll}
             disabled={isBlowing}
-            className="w-full relative py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-sky-500 hover:from-emerald-600 hover:to-sky-600 font-sans font-bold text-white text-sm flex items-center justify-center gap-2 shadow-md cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50"
+            className="w-full relative py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 font-sans font-bold text-white text-sm flex items-center justify-center gap-2 shadow-md cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50"
           >
             {isBlowing ? (
               <Wind className="w-4 h-4 animate-spin" />
@@ -230,7 +230,7 @@ export default function InteractiveCake({ onBlowAll }: InteractiveCakeProps) {
             onClick={relightCandles}
             className="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 font-sans font-bold text-emerald-300 text-sm flex items-center justify-center gap-2 border border-emerald-500/20 cursor-pointer transition-all duration-300 hover:scale-105"
           >
-            <FlameKindling className="w-4 h-4 text-orange-400" />
+            <FlameKindling className="w-4 h-4 text-emerald-400 animate-pulse" />
             <span>روشن کردن دوباره شمع‌ها 🔥</span>
           </button>
         )}
