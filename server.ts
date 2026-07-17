@@ -202,6 +202,24 @@ async function startServer() {
     res.json(db.songs);
   });
 
+  // Delete a song
+  app.delete('/api/songs/:id', checkAdminAuth, (req, res) => {
+    const { id } = req.params;
+    const db = readDb();
+    db.songs = db.songs.filter((s: any) => s.id !== id);
+    writeDb(db);
+    res.json(db.songs);
+  });
+
+  // Delete a wish
+  app.delete('/api/wishes/:id', checkAdminAuth, (req, res) => {
+    const { id } = req.params;
+    const db = readDb();
+    db.wishes = db.wishes.filter((w: any) => w.id !== id);
+    writeDb(db);
+    res.json(db.wishes);
+  });
+
   // Upload custom photo
   app.post('/api/photo/upload', checkAdminAuth, uploadPhoto.single('photo'), (req, res) => {
     if (!req.file) {

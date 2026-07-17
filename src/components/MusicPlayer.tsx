@@ -10,6 +10,8 @@ interface MusicPlayerProps {
   audioRef: MutableRefObject<HTMLAudioElement | null>;
   currentSong: Song | null;
   setCurrentSong: (song: Song | null) => void;
+  playlist: Song[];
+  onPlaylistChange: (songs: Song[]) => void;
 }
 
 export default function MusicPlayer({
@@ -17,9 +19,10 @@ export default function MusicPlayer({
   onPlayingChange,
   audioRef,
   currentSong,
-  setCurrentSong
+  setCurrentSong,
+  playlist,
+  onPlaylistChange
 }: MusicPlayerProps) {
-  const [playlist, setPlaylist] = useState<Song[]>(DEFAULT_SONGS);
   const [isUploading, setIsUploading] = useState(false);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
@@ -33,13 +36,13 @@ export default function MusicPlayer({
       })
       .then((data) => {
         if (data && data.length > 0) {
-          setPlaylist(data);
+          onPlaylistChange(data);
           // If the currentSong is not set, set it to the first song from DB
           if (!currentSong) {
             setCurrentSong(data[0]);
           }
         } else {
-          setPlaylist([]);
+          onPlaylistChange([]);
         }
       })
       .catch((err) => console.error('Error fetching songs on mount:', err));
@@ -238,7 +241,7 @@ export default function MusicPlayer({
       }
 
       const updatedPlaylist = await response.json();
-      setPlaylist(updatedPlaylist);
+      onPlaylistChange(updatedPlaylist);
       if (updatedPlaylist.length > 0) {
         setCurrentSong(updatedPlaylist[0]);
         onPlayingChange(true);

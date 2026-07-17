@@ -5,9 +5,13 @@ import { MAWSHID_POEMS, PRESET_WISHES } from '../data';
 import { Wish } from '../types';
 import BalloonPopGame from './BalloonPopGame';
 
-export default function GiftBoxesSection() {
+interface GiftBoxesSectionProps {
+  wishes: Wish[];
+  onWishesChange: (wishes: Wish[]) => void;
+}
+
+export default function GiftBoxesSection({ wishes, onWishesChange }: GiftBoxesSectionProps) {
   const [activeGift, setActiveGift] = useState<number | null>(null);
-  const [wishes, setWishes] = useState<Wish[]>([]);
   
   // Wishing form states
   const [senderName, setSenderName] = useState('');
@@ -23,11 +27,11 @@ export default function GiftBoxesSection() {
         return res.json();
       })
       .then((data) => {
-        setWishes(data);
+        onWishesChange(data);
       })
       .catch((err) => {
         console.error('Error fetching wishes:', err);
-        setWishes(PRESET_WISHES);
+        onWishesChange(PRESET_WISHES);
       });
   }, []);
 
@@ -53,7 +57,7 @@ export default function GiftBoxesSection() {
       }
 
       const updatedWishes = await response.json();
-      setWishes(updatedWishes);
+      onWishesChange(updatedWishes);
       setSenderName('');
       setWishText('');
     } catch (err) {

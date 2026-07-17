@@ -17,6 +17,13 @@
   RewriteCond %{REQUEST_METHOD} GET
   RewriteRule ^api/wishes$ api.php?action=get_wishes [QSA,L]
 
+  # Route DELETE requests
+  RewriteCond %{REQUEST_METHOD} DELETE
+  RewriteRule ^api/songs/([^/]+)$ api.php?action=delete_song&id=$1 [QSA,L]
+
+  RewriteCond %{REQUEST_METHOD} DELETE
+  RewriteRule ^api/wishes/([^/]+)$ api.php?action=delete_wish&id=$1 [QSA,L]
+
   RewriteRule ^api/sync$ api.php?action=sync_all [QSA,L]
 
   # 2. Support standard React Router SPA fallback to index.html

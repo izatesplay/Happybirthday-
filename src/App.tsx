@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Sparkles, Heart, Star, Calendar } from 'lucide-react';
+import { Sparkles, Heart, Star, Calendar, Settings, Lock } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import LandingScreen from './components/LandingScreen';
 import BackgroundParticles from './components/BackgroundParticles';
@@ -7,7 +7,8 @@ import MusicPlayer from './components/MusicPlayer';
 import PhotoSection from './components/PhotoSection';
 import InteractiveCake from './components/InteractiveCake';
 import GiftBoxesSection from './components/GiftBoxesSection';
-import { Song } from './types';
+import AdminPanel from './components/AdminPanel';
+import { Song, Wish } from './types';
 import { DEFAULT_SONGS } from './data';
 
 export default function App() {
@@ -16,6 +17,9 @@ export default function App() {
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
   const [isCelebrating, setIsCelebrating] = useState(false);
   const [photoUrl, setPhotoUrl] = useState<string>('/src/assets/images/mahshid_avatar_1784284797850.jpg');
+  const [playlist, setPlaylist] = useState<Song[]>([]);
+  const [wishes, setWishes] = useState<Wish[]>([]);
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
 
   // Fetch initial state (e.g. active photo) on mount
   useEffect(() => {
@@ -29,7 +33,11 @@ export default function App() {
           setPhotoUrl(data.activePhoto);
         }
         if (data.songs && data.songs.length > 0) {
+          setPlaylist(data.songs);
           setCurrentSong(data.songs[0]);
+        }
+        if (data.wishes) {
+          setWishes(data.wishes);
         }
       })
       .catch(err => console.error('Error fetching initial state on mount:', err));
@@ -258,6 +266,8 @@ export default function App() {
                   audioRef={audioRef}
                   currentSong={currentSong}
                   setCurrentSong={setCurrentSong}
+                  playlist={playlist}
+                  onPlaylistChange={setPlaylist}
                 />
               </div>
 
@@ -292,7 +302,7 @@ export default function App() {
 
           {/* LOWER FULL-WIDTH PANEL: INTERACTIVE SURPRISE GIFT BOXES */}
           <div className="border-t border-slate-800/60 pt-10 mt-4">
-            <GiftBoxesSection />
+            <GiftBoxesSection wishes={wishes} onWishesChange={setWishes} />
           </div>
 
           {/* Humble Aesthetic Footer */}
@@ -302,6 +312,38 @@ export default function App() {
           </div>
 
         </main>
+      )}
+
+      {/* 5. Floating Admin Panel Access Button */}
+      {hasEntered && (
+        <button
+          onClick={() => setIsAdminOpen(true)}
+          className="fixed top-6 left-6 z-40 p-3 rounded-full bg-slate-900/80 backdrop-blur-md border border-emerald-500/30 text-emerald-400 hover:text-white hover:bg-slate-800 transition-all shadow-[0_0_15px_rgba(16,185,129,0.2)] hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-2 px-4"
+          title="ورود به پنل مدیریت"
+        >
+          <Lock className="w-4 h-4" />
+          <span className="font-sans font-bold text-xs">پنل مدیریت ادمین</span>
+        </button>
+      )}
+
+      {/* 6. Admin Panel Drawer */}
+      {hasEntered && (
+        <AdminPanel
+          isOpen={isAdminOpen}
+          onClose={() => setIsAdminOpen(false)}
+          photoUrl={photoUrl}
+          onPhotoChange={setPhotoUrl}
+          playlist={playlist}
+          onPlaylistChange={setPlaylist}
+          currentSong={currentSong}
+          onCurrentSongChange={setCurrentSong}
+          wishes={wishes}
+          onWishesChange={setWishes}
+          onTriggerConfetti={() => {
+            triggerCelebration();
+            setIsAdminOpen(false);
+          }}
+        />
       )}
     </div>
   );

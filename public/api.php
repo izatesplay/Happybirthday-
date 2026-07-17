@@ -453,6 +453,44 @@ switch ($action) {
         echo json_encode(['activePhoto' => $default_photo], JSON_UNESCAPED_UNICODE);
         break;
 
+    case 'delete_song':
+        checkAdminAuth();
+        $id = isset($_GET['id']) ? trim($_GET['id']) : '';
+        if (!empty($id)) {
+            $stmt = $conn->prepare("DELETE FROM `songs` WHERE `id` = ?");
+            $stmt->bind_param("s", $id);
+            $stmt->execute();
+            $stmt->close();
+        }
+        
+        $songs = [];
+        $result = $conn->query("SELECT * FROM `songs` ORDER BY `isCustom` DESC, `id` DESC");
+        while ($row = $result->fetch_assoc()) {
+            $row['isCustom'] = (bool)$row['isCustom'];
+            $songs[] = $row;
+        }
+        echo json_encode($songs, JSON_UNESCAPED_UNICODE);
+        break;
+
+    case 'delete_wish':
+        checkAdminAuth();
+        $id = isset($_GET['id']) ? trim($_GET['id']) : '';
+        if (!empty($id)) {
+            $stmt = $conn->prepare("DELETE FROM `wishes` WHERE `id` = ?");
+            $stmt->bind_param("s", $id);
+            $stmt->execute();
+            $stmt->close();
+        }
+        
+        $wishes = [];
+        $result = $conn->query("SELECT * FROM `wishes` ORDER BY `timestamp` DESC");
+        while ($row = $result->fetch_assoc()) {
+            $row['timestamp'] = (float)$row['timestamp'];
+            $wishes[] = $row;
+        }
+        echo json_encode($wishes, JSON_UNESCAPED_UNICODE);
+        break;
+
     case 'sync_all':
         // همگام‌سازی دوطرفه تراکنشی برای کارکرد آفلاین/محلی محکم و بی نقص
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
