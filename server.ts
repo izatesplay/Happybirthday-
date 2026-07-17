@@ -6,7 +6,19 @@ import multer from 'multer';
 
 // Constants and directories
 const PORT = 3000;
-const DATA_DIR = path.join(process.cwd(), 'data');
+let DATA_DIR = path.join(process.cwd(), 'data');
+
+// Determine a writable directory structure (fallback to /tmp/data if process.cwd() is read-only)
+try {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+  const testFile = path.join(DATA_DIR, '.write_test');
+  fs.writeFileSync(testFile, 'test');
+  fs.unlinkSync(testFile);
+} catch (e) {
+  console.warn('⚠️ process.cwd() is read-only or not writable. Falling back to /tmp/data for persistent files.');
+  DATA_DIR = path.join('/tmp', 'data');
+}
+
 const UPLOADS_DIR = path.join(DATA_DIR, 'uploads');
 const SONGS_DIR = path.join(UPLOADS_DIR, 'songs');
 const PHOTOS_DIR = path.join(UPLOADS_DIR, 'photos');
@@ -14,10 +26,15 @@ const DB_PATH = path.join(DATA_DIR, 'db.json');
 
 // Ensure database and directories exist
 function ensureDirs() {
-  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-  if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
-  if (!fs.existsSync(SONGS_DIR)) fs.mkdirSync(SONGS_DIR, { recursive: true });
-  if (!fs.existsSync(PHOTOS_DIR)) fs.mkdirSync(PHOTOS_DIR, { recursive: true });
+  try {
+    if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+    if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+    if (!fs.existsSync(SONGS_DIR)) fs.mkdirSync(SONGS_DIR, { recursive: true });
+    if (!fs.existsSync(PHOTOS_DIR)) fs.mkdirSync(PHOTOS_DIR, { recursive: true });
+    console.log(`✅ File structure validated/created at: ${DATA_DIR}`);
+  } catch (error) {
+    console.error('❌ Failed to create directories:', error);
+  }
 
   if (!fs.existsSync(DB_PATH)) {
     const initialDb = {
@@ -66,7 +83,12 @@ function ensureDirs() {
         }
       ]
     };
-    fs.writeFileSync(DB_PATH, JSON.stringify(initialDb, null, 2), 'utf-8');
+    try {
+      fs.writeFileSync(DB_PATH, JSON.stringify(initialDb, null, 2), 'utf-8');
+      console.log('✅ Created initial db.json database successfully.');
+    } catch (error) {
+      console.error('❌ Failed to write initial db.json:', error);
+    }
   }
 }
 
