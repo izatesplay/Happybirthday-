@@ -38,26 +38,7 @@ function ensureDirs() {
 
   if (!fs.existsSync(DB_PATH)) {
     const initialDb = {
-      songs: [
-        {
-          id: 'acoustic-birthday',
-          title: 'موسیقی ملایم تولد (آکوستیک)',
-          artist: 'Instrumental',
-          url: 'https://assets.codepen.io/4358584/Anni+Lennon+-+Happy+Birthday.mp3'
-        },
-        {
-          id: 'ambient-lounge',
-          title: 'تکنو-پاپ شاد تولد',
-          artist: 'Chillout Loop',
-          url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
-        },
-        {
-          id: 'piano-magic',
-          title: 'پیانو جادویی رویایی',
-          artist: 'Classical Piano',
-          url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3'
-        }
-      ],
+      songs: [],
       activePhoto: '/src/assets/images/mahshid_avatar_1784284797850.jpg',
       wishes: [
         {

@@ -130,29 +130,7 @@ if ($row['count'] == 0) {
 $res = $conn->query("SELECT COUNT(*) as count FROM `songs`");
 $row = $res->fetch_assoc();
 if ($row['count'] == 0) {
-    $default_songs = [
-        [
-            "id" => "acoustic-birthday",
-            "title" => "موسیقی ملایم تولد (آکوستیک)",
-            "artist" => "Instrumental",
-            "url" => "https://assets.codepen.io/4358584/Anni+Lennon+-+Happy+Birthday.mp3",
-            "isCustom" => 0
-        ],
-        [
-            "id" => "ambient-lounge",
-            "title" => "تکنو-پاپ شاد تولد",
-            "artist" => "Chillout Loop",
-            "url" => "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-            "isCustom" => 0
-        ],
-        [
-            "id" => "piano-magic",
-            "title" => "پیانو جادویی رویایی",
-            "artist" => "Classical Piano",
-            "url" => "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
-            "isCustom" => 0
-        ]
-    ];
+    $default_songs = [];
     $stmt = $conn->prepare("INSERT INTO `songs` (`id`, `title`, `artist`, `url`, `isCustom`) VALUES (?, ?, ?, ?, ?)");
     foreach ($default_songs as $song) {
         $stmt->bind_param("ssssi", $song['id'], $song['title'], $song['artist'], $song['url'], $song['isCustom']);
@@ -198,17 +176,34 @@ if ($row['count'] == 0) {
 
 
 // ۶. بررسی هویت مدیر برای کارهای حساس (مانند بارگذاری آهنگ و تصویر)
+function getallheaders_custom() {
+    $headers = [];
+    if (function_exists('getallheaders')) {
+        foreach (getallheaders() as $key => $val) {
+            $headers[strtolower($key)] = $val;
+        }
+    }
+    // بازیابی به عنوان پشتیبان از متغیرهای سرور در محیط‌های مختلف مانند Nginx یا FastCGI
+    foreach ($_SERVER as $name => $value) {
+        if (substr($name, 0, 5) == 'HTTP_') {
+            $key = str_replace(' ', '-', strtolower(str_replace('_', ' ', substr($name, 5))));
+            $headers[$key] = $value;
+        }
+    }
+    return $headers;
+}
+
 function checkAdminAuth() {
-    $headers = getallheaders();
+    $headers = getallheaders_custom();
     $password = '';
 
-    if (isset($headers['Authorization'])) {
-        $authHeader = $headers['Authorization'];
+    if (isset($headers['authorization'])) {
+        $authHeader = $headers['authorization'];
         if (strpos($authHeader, 'Bearer ') === 0) {
             $password = substr($authHeader, 7);
         }
-    } elseif (isset($headers['X-Admin-Password'])) {
-        $password = $headers['X-Admin-Password'];
+    } elseif (isset($headers['x-admin-password'])) {
+        $password = $headers['x-admin-password'];
     }
 
     if ($password === ADMIN_PASSWORD) {

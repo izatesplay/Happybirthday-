@@ -8,8 +8,8 @@ interface MusicPlayerProps {
   isPlaying: boolean;
   onPlayingChange: (playing: boolean) => void;
   audioRef: MutableRefObject<HTMLAudioElement | null>;
-  currentSong: Song;
-  setCurrentSong: (song: Song) => void;
+  currentSong: Song | null;
+  setCurrentSong: (song: Song | null) => void;
 }
 
 export default function MusicPlayer({
@@ -34,10 +34,12 @@ export default function MusicPlayer({
       .then((data) => {
         if (data && data.length > 0) {
           setPlaylist(data);
-          // If the currentSong is still the default fallback, override with the first song from DB
-          if (currentSong.id === DEFAULT_SONGS[0]?.id) {
+          // If the currentSong is not set, set it to the first song from DB
+          if (!currentSong) {
             setCurrentSong(data[0]);
           }
+        } else {
+          setPlaylist([]);
         }
       })
       .catch((err) => console.error('Error fetching songs on mount:', err));
@@ -152,10 +154,12 @@ export default function MusicPlayer({
   }, [isPlaying]);
 
   const handlePlayPause = () => {
+    if (!currentSong) return;
     onPlayingChange(!isPlaying);
   };
 
   const handleNext = () => {
+    if (!currentSong || playlist.length === 0) return;
     const currentIndex = playlist.findIndex((s) => s.id === currentSong.id);
     let nextIndex = currentIndex + 1;
     if (nextIndex >= playlist.length) {
@@ -282,7 +286,7 @@ export default function MusicPlayer({
         ref={(el) => {
           audioRef.current = el;
         }}
-        src={currentSong.url}
+        src={currentSong ? currentSong.url : ''}
         preload="auto"
       />
 
@@ -302,10 +306,10 @@ export default function MusicPlayer({
           </div>
           <div className="overflow-hidden text-right">
             <h3 className="font-sans font-bold text-sm text-emerald-100 truncate leading-tight">
-              {currentSong.title}
+              {currentSong ? currentSong.title : 'هیچ موزیکی بارگذاری نشده است'}
             </h3>
             <span className="font-sans text-xs text-slate-400 block mt-0.5 truncate">
-              {currentSong.artist}
+              {currentSong ? currentSong.artist : 'جهت پخش، موزیک دلخواه آپلود کنید 🎧'}
             </span>
           </div>
         </div>
@@ -344,7 +348,8 @@ export default function MusicPlayer({
           max={duration || 100}
           value={currentTime}
           onChange={handleSeek}
-          className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-400 focus:outline-none"
+          disabled={!currentSong}
+          className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-400 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
         />
         <div className="flex justify-between text-xs text-slate-500 font-mono">
           <span>{formatTime(currentTime)}</span>
@@ -357,7 +362,8 @@ export default function MusicPlayer({
         {/* Playlist Toggle */}
         <button
           onClick={() => setIsListOpen(!isListOpen)}
-          className={`px-3 py-1.5 rounded-lg text-xs font-sans border cursor-pointer transition-all ${
+          disabled={playlist.length === 0}
+          className={`px-3 py-1.5 rounded-lg text-xs font-sans border cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
             isListOpen
               ? 'bg-emerald-500/20 border-emerald-400/50 text-emerald-300 shadow-[0_0_10px_rgba(16,185,129,0.2)]'
               : 'bg-slate-800/40 border-slate-700/50 text-slate-400 hover:text-emerald-300'
@@ -370,13 +376,15 @@ export default function MusicPlayer({
         <div className="flex items-center gap-3">
           <button
             onClick={handlePlayPause}
-            className="w-11 h-11 rounded-full bg-gradient-to-r from-emerald-500 to-sky-500 flex items-center justify-center cursor-pointer shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:scale-105 active:scale-95 text-white transition-all duration-200"
+            disabled={!currentSong}
+            className="w-11 h-11 rounded-full bg-gradient-to-r from-emerald-500 to-sky-500 flex items-center justify-center cursor-pointer shadow-[0_0_15px_rgba(16,185,129,0.3)] hover:scale-105 active:scale-95 text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
-            {isPlaying ? <Pause className="w-5 h-5 fill-white" /> : <Play className="w-5 h-5 fill-white translate-x-0.5" />}
+            {isPlaying && currentSong ? <Pause className="w-5 h-5 fill-white" /> : <Play className="w-5 h-5 fill-white translate-x-0.5" />}
           </button>
           <button
             onClick={handleNext}
-            className="p-2 text-slate-400 hover:text-emerald-300 cursor-pointer hover:scale-110 active:scale-95 transition-all"
+            disabled={!currentSong || playlist.length <= 1}
+            className="p-2 text-slate-400 hover:text-emerald-300 cursor-pointer hover:scale-110 active:scale-95 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
             title="آهنگ بعدی"
           >
             <SkipForward className="w-5 h-5" />
@@ -387,7 +395,8 @@ export default function MusicPlayer({
         <div className="flex items-center gap-2">
           <button
             onClick={toggleMute}
-            className="text-slate-400 hover:text-emerald-300 cursor-pointer transition-all"
+            disabled={!currentSong}
+            className="text-slate-400 hover:text-emerald-300 cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
@@ -398,7 +407,8 @@ export default function MusicPlayer({
             step="0.05"
             value={volume}
             onChange={handleVolumeChange}
-            className="w-16 h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-400 focus:outline-none"
+            disabled={!currentSong}
+            className="w-16 h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-400 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
       </div>
@@ -411,13 +421,13 @@ export default function MusicPlayer({
               key={song.id}
               onClick={() => handleSelectSong(song)}
               className={`w-full text-right px-3 py-2 text-xs font-sans rounded-lg transition-all flex items-center justify-between cursor-pointer ${
-                song.id === currentSong.id
+                currentSong && song.id === currentSong.id
                   ? 'bg-emerald-500/10 text-emerald-300 font-bold border-l-2 border-emerald-400'
                   : 'text-slate-400 hover:bg-slate-800 hover:text-emerald-200'
               }`}
             >
               <div className="flex items-center gap-2 overflow-hidden">
-                {song.id === currentSong.id ? (
+                {currentSong && song.id === currentSong.id ? (
                   <Music4 className="w-3.5 h-3.5 text-emerald-400 animate-pulse-slow" />
                 ) : (
                   <Music className="w-3.5 h-3.5 text-slate-500" />

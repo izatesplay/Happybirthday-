@@ -1,0 +1,26 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # 1. Route API requests from /api/... to api.php?action=...
+  RewriteRule ^api/admin/verify$ api.php?action=verify_admin [QSA,L]
+  RewriteRule ^api/state$ api.php?action=state [QSA,L]
+  RewriteRule ^api/songs/upload$ api.php?action=upload_song [QSA,L]
+  RewriteRule ^api/songs$ api.php?action=get_songs [QSA,L]
+  RewriteRule ^api/photo/upload$ api.php?action=upload_photo [QSA,L]
+  RewriteRule ^api/photo/reset$ api.php?action=reset_photo [QSA,L]
+
+  # Route wishes based on HTTP request method
+  RewriteCond %{REQUEST_METHOD} POST
+  RewriteRule ^api/wishes$ api.php?action=add_wish [QSA,L]
+
+  RewriteCond %{REQUEST_METHOD} GET
+  RewriteRule ^api/wishes$ api.php?action=get_wishes [QSA,L]
+
+  RewriteRule ^api/sync$ api.php?action=sync_all [QSA,L]
+
+  # 2. Support standard React Router SPA fallback to index.html
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . index.html [L]
+</IfModule>

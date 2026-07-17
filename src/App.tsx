@@ -13,7 +13,7 @@ import { DEFAULT_SONGS } from './data';
 export default function App() {
   const [hasEntered, setHasEntered] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentSong, setCurrentSong] = useState<Song>(DEFAULT_SONGS[0]!);
+  const [currentSong, setCurrentSong] = useState<Song | null>(null);
   const [isCelebrating, setIsCelebrating] = useState(false);
   const [photoUrl, setPhotoUrl] = useState<string>('/src/assets/images/mahshid_avatar_1784284797850.jpg');
 
@@ -27,6 +27,9 @@ export default function App() {
       .then(data => {
         if (data.activePhoto) {
           setPhotoUrl(data.activePhoto);
+        }
+        if (data.songs && data.songs.length > 0) {
+          setCurrentSong(data.songs[0]);
         }
       })
       .catch(err => console.error('Error fetching initial state on mount:', err));
